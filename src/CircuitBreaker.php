@@ -6,17 +6,16 @@ use Illuminate\Contracts\Cache\Repository;
 
 class CircuitBreaker
 {
-
-    const OPEN = 'open';
-    const HALF_OPEN = 'half-open';
-    const ERRORS = 'errors';
-    const SUCCESSES = 'successes';
-
+    public const OPEN = 'open';
+    public const HALF_OPEN = 'half-open';
+    public const ERRORS = 'errors';
+    public const SUCCESSES = 'successes';
 
     public function __construct(
         protected string     $service,
         protected Config     $config,
-        protected Repository $cache)
+        protected Repository $cache
+    )
     {
     }
 
@@ -26,23 +25,26 @@ class CircuitBreaker
     public function isOpen(): bool
     {
         return (bool)$this->cache->get(
-            $this->getKeyName(CircuitBreaker::OPEN)
-            , 0);
+            $this->getKeyName(CircuitBreaker::OPEN),
+            0
+        );
     }
 
     public function isHalfOpen(): bool
     {
-        return !$this->isOpen() && $this->cache->get(
-                $this->getKeyName(CircuitBreaker::HALF_OPEN)
-                , 0);
+        return ! $this->isOpen() && $this->cache->get(
+            $this->getKeyName(CircuitBreaker::HALF_OPEN),
+            0
+        );
     }
 
     public function isClose(): bool
     {
-        if (!$this->isAvailable()) {
+        if (! $this->isAvailable()) {
             return false;
         }
-        return !$this->isHalfOpen();
+
+        return ! $this->isHalfOpen();
     }
 
     /**
@@ -54,12 +56,13 @@ class CircuitBreaker
     {
         if ($this->isHalfOpen()) {
             $this->openCircuit();
+
             return;
         }
 
         $this->incrementErrors();
 
-        if ($this->reachedErrorThreshold() && !$this->isOpen()) {
+        if ($this->reachedErrorThreshold() && ! $this->isOpen()) {
             $this->openCircuit();
         }
     }
@@ -91,7 +94,7 @@ class CircuitBreaker
     {
         $key = $this->getKeyName(CircuitBreaker::ERRORS);
 
-        if (!$this->cache->get($key)) {
+        if (! $this->cache->get($key)) {
             return $this->cache->put($key, 1, $this->config->timeWindow);
         }
 
@@ -105,7 +108,7 @@ class CircuitBreaker
     {
         $key = $this->getKeyName(CircuitBreaker::SUCCESSES);
 
-        if (!$this->cache->get($key)) {
+        if (! $this->cache->get($key)) {
             return $this->cache->put($key, 1, $this->config->timeWindow);
         }
 
@@ -114,8 +117,9 @@ class CircuitBreaker
 
     public function markSuccess(): void
     {
-        if (!$this->isHalfOpen()) {
+        if (! $this->isHalfOpen()) {
             $this->reset();
+
             return;
         }
 
@@ -133,7 +137,6 @@ class CircuitBreaker
         $this->cache->delete($this->getKeyName(CircuitBreaker::HALF_OPEN));
         $this->cache->delete($this->getKeyName(CircuitBreaker::ERRORS));
     }
-
 
     protected function setOpenCircuit(): void
     {
@@ -153,19 +156,20 @@ class CircuitBreaker
         );
     }
 
-
     public function getErrorsCount(): int
     {
         return (int)$this->cache->get(
-            $this->getKeyName(self::ERRORS)
-            , 0);
+            $this->getKeyName(self::ERRORS),
+            0
+        );
     }
 
     public function getSuccessesCount(): int
     {
         return (int)$this->cache->get(
-            $this->getKeyName(self::SUCCESSES)
-            , 0);
+            $this->getKeyName(self::SUCCESSES),
+            0
+        );
     }
 
     public function isAvailable(): bool
@@ -187,6 +191,4 @@ class CircuitBreaker
     {
         return "circuit-breaker:{$this->service}:{$key}";
     }
-
-
 }

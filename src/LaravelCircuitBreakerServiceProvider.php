@@ -23,7 +23,7 @@ class LaravelCircuitBreakerServiceProvider extends PackageServiceProvider
     public function packageRegistered()
     {
         $this->app->singleton(CircuitBreakerManager::class, function () {
-            return new CircuitBreakerManager(app(CacheManager::class),config('circuit-breaker'));
+            return new CircuitBreakerManager(app(CacheManager::class), config('circuit-breaker'));
         });
     }
 }

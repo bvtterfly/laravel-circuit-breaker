@@ -120,4 +120,3 @@ function getDefaultConfig(): array
         'success_threshold' => 3,
     ];
 }
-
