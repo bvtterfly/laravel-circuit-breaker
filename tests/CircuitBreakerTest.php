@@ -1,11 +1,8 @@
 <?php
 
 use Bvtterfly\LaravelCircuitBreaker\CircuitBreaker;
-use Bvtterfly\LaravelCircuitBreaker\CircuitBreakerManager;
 use Bvtterfly\LaravelCircuitBreaker\Config;
 use Illuminate\Cache\Repository;
-use Illuminate\Support\Carbon;
-
 
 it('should available & close', function () {
     $config = getConfig();
