@@ -15,8 +15,7 @@ class CircuitBreaker
         protected string     $service,
         protected Config     $config,
         protected Repository $cache
-    )
-    {
+    ) {
     }
 
     /**

@@ -20,8 +20,7 @@ class Config
         public $errorTimeout,
         public $halfOpenTimeout,
         public $successThreshold
-    )
-    {
+    ) {
     }
 
     public static function fromArray(array $config)
